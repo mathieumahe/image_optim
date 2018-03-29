@@ -35,13 +35,15 @@ class ImageOptim
       CAREFUL_OPTION =
       option(:careful, false, 'Avoid bugs with some software'){ |v| !!v }
 
+      LOOPCOUNT_OPTION =
+      option(:same_loopcount, true, 'Set to false, it will avoid bugs with some browsers when gif doesn\'t loop'){ |v| !!v }
+
       def optimize(src, dst)
         args = %W[
           --output=#{dst}
           --no-comments
           --no-names
           --same-delay
-          --same-loopcount
           --no-warnings
           --
           #{src}
@@ -54,6 +56,7 @@ class ImageOptim
         unless interlace.nil?
           args.unshift interlace ? '--interlace' : '--no-interlace'
         end
+        args.unshift same_loopcount ? '--same-loopcount' : '--loopcount'
         args.unshift '--careful' if careful
         args.unshift "--optimize=#{level}" if level
         execute(:gifsicle, *args) && optimized?(src, dst)
